@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>С Днём матери, мама!</title>
+    <!-- Шрифты (необязательно, но красиво) -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Montserrat:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at top, #ffe4f0 0, #ffbad6 35%, #ff89b3 70%, #f35a9f 100%);
+            font-family: "Montserrat", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            overflow: hidden;
+            color: #3b0b2a;
+        }
+
+        .scene {
+            position: relative;
+            width: min(420px, 100vw - 40px);
+            perspective: 1300px;
+        }
+
+        .card-wrapper {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            transform-style: preserve-3d;
+            transition: transform 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .scene.open .card-wrapper {
+            transform: rotateY(180deg);
+        }
+
+        .card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(173, 17, 96, 0.35);
+            backface-visibility: hidden;
+            overflow: hidden;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #ffebf5, #ffd5e8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+        }
+
+        .card-front h1 {
+            font-family: "Pacifico", cursive;
+            font-size: 2.2rem;
+            color: #e0177b;
+            text-shadow: 0 3px 10px rgba(255, 0, 102, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .card-front h2 {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #a22059;
+            margin-bottom: 14px;
+        }
+
+        .card-front .heart-big {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            transform: translateY(4px);
+            animation: heartbeat 1.5s infinite;
+        }
+
+        .card-front .heart-big::before,
+        .card-front .heart-big::after {
+            content: "";
+            position: absolute;
+            width: 50%;
+            height: 80%;
+            background: radial-gradient(circle at 20% 20%, #fff9fb 0, #ff4b9c 40%, #e0177b 100%);
+            border-radius: 50px 50px 0 0;
+        }
+
+        .card-front .heart-big::before {
+            left: 0;
+            transform: rotate(-45deg) translateX(18%);
+            transform-origin: 100% 100%;
+        }
+
+        .card-front .heart-big::after {
+            right: 0;
+            transform: rotate(45deg) translateX(-18%);
+            transform-origin: 0 100%;
+        }
+
+        .tagline {
+            margin-top: 16px;
+            font-size: 0.95rem;
+            max-width: 280px;
+            color: #722046;
+        }
+
+        .hint {
+            position: absolute;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: rgba(114, 32, 70, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.9;
+        }
+
+        .hint-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e0177b;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            animation: pulse 1.3s infinite;
+        }
+
+        .card-back {
+            background: #fffdfd;
+            transform: rotateY(180deg);
+            padding: 24px 24px 70px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-back-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .card-back-title {
+            font-family: "Pacifico", cursive;
+            font-size: 1.8rem;
+            color: #e0177b;
+            line-height: 1.2;
+        }
+
+        .chip {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            border-radius: 999px;
+            padding: 6px 14px;
+            background: rgba(255, 180, 214, 0.25);
+            color: #a22059;
+            border: 1px solid rgba(255, 122, 186, 0.6);
+            white-space: nowrap;
+        }
+
+        .message {
+            margin-top: 16px;
+            font-size: 0.95rem;
+            line-height: 1.65;
+            color: #5b1236;
+            min-height: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .message p+p {
+            margin-top: 8px;
+        }
+
+        .signature {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            text-align: right;
+            color: #8a325c;
+            font-style: italic;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 18px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn {
+            border: none;
+            outline: none;
+            border-radius: 999px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff4b9c, #ff87c1);
+            color: #fff;
+            box-shadow: 0 8px 18px rgba(255, 0, 88, 0.45);
+        }
+
+        .btn-primary span.heart {
+            font-size: 1.05rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 14px 26px rgba(255, 0, 88, 0.55);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 248, 252, 0.9);
+            color: #b12c6a;
+            border: 1px solid rgba(255, 112, 176, 0.8);
+            box-shadow: 0 4px 10px rgba(173, 17, 96, 0.2);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(173, 17, 96, 0.35);
+        }
+
+        .btn:active {
+            transform: translateY(0) scale(0.98);
+            box-shadow: none;
+        }
+
+        /* Летающие сердечки */
+        .floating-heart {
+            position: fixed;
+            bottom: -30px;
+            font-size: 18px;
+            pointer-events: none;
+            opacity: 0;
+            animation: floatUp linear forwards;
+            z-index: 0;
+        }
+
+        /* Подсветка вокруг сцены */
+        .glow-ring {
+            position: absolute;
+            inset: -20px;
+            border-radius: 32px;
+            border: 2px dashed rgba(255, 230, 245, 0.4);
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.4);
+            opacity: 0;
+            transform: scale(0.93);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+            z-index: -1;
+        }
+
+        .scene.open .glow-ring {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Анимации */
+        @keyframes heartbeat {
+
+            0%,
+            20%,
+            60%,
+            100% {
+                transform: scale(1) translateY(4px);
+            }
+
+            10%,
+            50% {
+                transform: scale(1.12) translateY(4px);
+            }
+
+            30% {
+                transform: scale(0.96) translateY(4px);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: scale(1.4);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) translateX(0) scale(0.7) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            100% {
+
+                transform: translateY(-120vh) translateX(-20px) scale(1.4) rotate(-8deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card-wrapper {
+                height: 240px;
+            }
+
+            .card-front h1 {
+                font-size: 1.9rem;
+            }
+
+            .card-back-title {
+                font-size: 1.6rem;
+            }
+
+            .scene {
+                width: calc(100vw - 32px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="scene" id="scene">
+        <div class="glow-ring"></div>
+        <div class="card-wrapper">
+            <!-- Лицевая сторона -->
+            <div class="card card-front">
+                <h2>С ДНЁМ МАТЕРИ</h2>
+                <h1>Мама ♥</h1>
+                <div class="heart-big"></div>
+                <div class="tagline">
+                    Нажми на открытку, чтобы открыть моё маленькое волшебное послание для тебя.
+                </div>
+            </div>
+
+            <!-- Внутренность открытки -->
+            <div class="card card-back">
+                <div class="card-back-top">
+                    <div class="card-back-title">Любимая мама</div>
+                    <div class="chip">самая лучшая на свете</div>
+                </div>
+
+                <div class="message" id="message"></div>
+
+                <div class="signature" id="signature" style="opacity:0;">
+                    С любовью, твой сын! ❤️
+                </div>
+
+                <div class="controls">
+                    <button class="btn btn-primary" id="againBtn">
+                        <span class="heart">❤</span>
+                        Ещё раз
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scene = document.getElementById("scene");
+        const messageEl = document.getElementById("message");
+        const signatureEl = document.getElementById("signature");
+        const againBtn = document.getElementById("againBtn");
+        const hugBtn = document.getElementById("hugBtn");
+
+        // Текст поздравления (можешь поменять под себя!) 
+        const paragraphs = [
+            "Мамочка, спасибо тебе за то, что именно рядом с тобой мир всегда кажется тёплым, добрым и безопасным.",
+            "Ты умеешь поддержать одним взглядом, согреть одним объятием и вдохновить одной фразой. Я так счастлив, что именно ты — моя мама!",
+            "Пусть каждый твой день будет наполнен улыбками, заботой (не только твоей, но и о тебе!), маленькими чудесами и большими мечтами, которые обязательно сбываются.",
+            "Я люблю тебя бесконечно. Сегодня, завтра и всегда."
+        ];
+
+        let typing = false;
+        let currentTimeouts = [];
+
+        function clearTyping() {
+            currentTimeouts.forEach(timeout => clearTimeout(timeout));
+            currentTimeouts = [];
+            typing = false;
+        }
+
+        function typeMessage() {
+            clearTyping();
+            messageEl.innerHTML = "";
+            signatureEl.style.opacity = "0";
+
+            let paragraphIndex = 0;
+            let charIndex = 0;
+
+            typing = true;
+
+            function typeNextChar() {
+                if (!typing) return;
+
+                if (paragraphIndex >= paragraphs.length) {
+                    // Показать подпись 
+                    setTimeout(() => {
+                        signatureEl.style.transition = "opacity 0.8s ease";
+                        signatureEl.style.opacity = "1";
+                    }, 300);
+                    typing = false;
+                    return;
+                }
+
+                const currentParagraphText = paragraphs[paragraphIndex];
+
+                // Если параграф ещё не создан, создаём 
+                if (!messageEl.children[paragraphIndex]) {
+                    const p = document.createElement("p");
+                    p.textContent = "";
+                    messageEl.appendChild(p);
+                }
+
+                const pEl = messageEl.children[paragraphIndex];
+
+                if (charIndex < currentParagraphText.length) {
+                    pEl.textContent += currentParagraphText.charAt(charIndex);
+                    charIndex++;
+
+                    const delay = Math.random() * 40 + 25; // небольшой рандом для живости 
+                    const t = setTimeout(typeNextChar, delay);
+                    currentTimeouts.push(t);
+                } else {
+                    // Переходим к следующему параграфу 
+                    paragraphIndex++;
+                    charIndex = 0;
+                    const t = setTimeout(typeNextChar, 350);
+                    currentTimeouts.push(t);
+                }
+            }
+
+            typeNextChar();
+        }
+
+        // Летающие сердечки 
+        let heartsIntervalId = null;
+
+        function createHeart() {
+            const heart = document.createElement("div");
+            heart.classList.add("floating-heart");
+            heart.textContent = Math.random() > 0.4 ? "❤" : "💕";
+
+            const startLeft = Math.random() * 100; // процентов ширины окна 
+            const duration = Math.random() * 4 + 5; // от 5 до 9 сек 
+
+            heart.style.left = startLeft + "vw";
+            heart.style.animationDuration = duration + "s";
+            heart.style.opacity = 0;
+
+            document.body.appendChild(heart);
+
+            // Удаляем, когда анимация закончилась 
+            setTimeout(() => {
+                heart.remove();
+            }, duration * 1000 + 1000);
+        }
+
+        function startHearts() {
+            if (heartsIntervalId !== null) return;
+            // Несколько сразу, чтобы не было пусто 
+            for (let i = 0; i < 6; i++) {
+                setTimeout(createHeart, i * 300);
+            }
+            heartsIntervalId = setInterval(createHeart, 700);
+        }
+
+        // Открытие открытки по клику на сцену (по всей карточке) 
+        scene.addEventListener("click", (e) => {
+            // Если нажимаем на кнопки — не переворачиваем 
+            if (e.target.closest("button")) return;
+
+            scene.classList.add("open");
+            typeMessage();
+            startHearts();
+        });
+
+        // Кнопка "Ещё раз": перевыполнить печать текста 
+        againBtn.addEventListener("click", (e) => {
+            e.stopPropagation(); // чтобы не сработал общий клик по сцене 
+            if (!scene.classList.contains("open")) {
+                scene.classList.add("open");
+                startHearts();
+            }
+            typeMessage();
+        });
+
+        // Кнопка "Обнять тебя!" 
+        hugBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            hugBtn.textContent = "Мысленно обнимаю крепко-крепко 🤗";
+            hugBtn.style.transform = "scale(1.03)";
+            setTimeout(() => {
+                hugBtn.style.transform = "";
+            }, 200);
+
+            // Небольшой всплеск сердечек 
+            for (let i = 0; i < 8; i++) {
+                setTimeout(createHeart, i * 120);
+            }
+        });
+
+        // Небольшая "подсказка" — легкое покачивание сцены 
+        let hintTick = 0;
+        const hintInterval = setInterval(() => {
+            if (scene.classList.contains("open")) {
+                clearInterval(hintInterval);
+                return;
+            }
+            hintTick++;
+            const angle = Math.sin(hintTick / 5) * 3;
+            scene.style.transform = `rotateZ(${angle}deg)`;
+            if (hintTick > 40) {
+                scene.style.transform = "none";
+                clearInterval(hintInterval);
+            }
+        }, 80); 
+    </script>
+</body>
+
+</html>
